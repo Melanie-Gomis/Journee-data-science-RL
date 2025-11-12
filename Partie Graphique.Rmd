@@ -1,0 +1,24 @@
+---
+title: "Partie visualisation"
+output: html_notebook
+---
+# 1. Génération des données
+
+```{r}
+set.seed(123)
+n <-  100
+
+# Résidu 
+sigma2 <- 1
+bruit <- rnorm(n, mean = 0, sd = sqrt(sigma2))
+
+# Vecteur
+X1 <- runif(n, min = -2, max = 2)
+X2 <- rpois(n, lambda = 3)
+
+# Coefficient beta 
+beta <-  c(1, 1, 1)
+
+# Réponse Y
+Y <- beta[1] + beta[2]*X1 + beta[3]*X2 + bruit
+```
