@@ -53,7 +53,7 @@ cor_mat = cor(X)
 corrplot(cor_mat, type="upper", order="hclust", tl.col="black", tl.srt=45)
 
 ```
-
+Ceci confirme ce qu'on avait déduit du nuage de points.
 
 ## 3. Histogramme des résidus 
 
@@ -63,19 +63,38 @@ corrplot(cor_mat, type="upper", order="hclust", tl.col="black", tl.srt=45)
 hist(reg$residuals, col = "skyblue", main = "Distribution des résidus")
 
 ```
-
+Les résidus suivent bien une loi normale centrée.
 
 ## 4. Graphes des résidus
 
 ```{r}
 # Graphe des résidus en fonction de Y
 plot(Y, reg$residuals)
+abline(h = 0, col = "red")
 
 # Graphe des résidus en fonction de X1
 plot(X1, reg$residuals)
+abline(h = 0, col = "red")
 
 # Graphe des résidus en fonction de X2
 plot(X2, reg$residuals)
+abline(h = 0, col = "red")
+```
+Le graphique des résidus en fonction de Y n'est pas celui attendu, on voit une légère tendance, malgré le fait qu'il n'y a auncune corrélation en X1 et X2.
+
+
+```{r}
+#Matrice de corrélation et plot 
+X = cbind(Y, reg$residuals)
+cor_mat = cor(X)
+corrplot(cor_mat, type="upper", order="hclust", tl.col="black", tl.srt=45)
+
+```
+```{r}
+plot(reg$fitted.values, reg$residuals)
+abline(h = 0, col = "red")
+
+
 ```
 
 ## 5. QQplot
@@ -85,6 +104,7 @@ plot(X2, reg$residuals)
 qqnorm(residuals(reg), main = "QQ-plot des résidus")
 qqline(residuals(reg), col = "red", lwd = 2)
 ```
+Les résidus sont assez bien alignés avec la droite diagonale, donc cela confirme que les résidus suivent une loi normale.
 
 # 2. Avec corrélation entre les variables explicatives
 
@@ -158,6 +178,8 @@ plot(X2, reg$residuals)
 qqnorm(residuals(reg), main = "QQ-plot des résidus")
 qqline(residuals(reg), col = "red", lwd = 2)
 ```
+
+Donc, malgré la liaison, on ne voit pas de réelle différence entre les graphiques. Ils suffisent donc pas à l'analyse.
 
 # 3. Avec plus de variables explicatitves
 
