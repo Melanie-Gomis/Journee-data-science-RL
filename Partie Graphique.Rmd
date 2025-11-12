@@ -2,7 +2,9 @@
 title: "Partie visualisation"
 output: html_notebook
 ---
-# 1. Génération des données
+# 1. Sans corrélation entre les variables explicatives
+
+## 1. Génération des données
 
 ```{r}
 set.seed(123)
@@ -14,11 +16,95 @@ bruit <- rnorm(n, mean = 0, sd = sqrt(sigma2))
 
 # Vecteur
 X1 <- runif(n, min = -2, max = 2)
-X2 <- rpois(n, lambda = 3)
+X2 <- rexp(n, rate = 3)
 
 # Coefficient beta 
 beta <-  c(1, 1, 1)
 
 # Réponse Y
 Y <- beta[1] + beta[2]*X1 + beta[3]*X2 + bruit
+
+# RL
+reg <- lm(Y ~ X1 + X2)
 ```
+
+## 2. Graphique des corrélation
+
+## 3. Boxplot des variables
+
+## 4. Graphes des résidus
+
+```{r}
+# Graphe des résidus en fonction de Y
+plot(Y, reg$residuals)
+
+# Graphe des résidus en fonction de X1
+plot(X1, reg$residuals)
+
+# Graphe des résidus en fonction de X2
+plot(X2, reg$residuals)
+```
+
+## 5. QQplot
+
+```{r}
+# QQ-plot des résidus
+qqnorm(residuals(reg), main = "QQ-plot des résidus")
+qqline(residuals(reg), col = "red", lwd = 2)
+```
+
+# 2. Avec corrélation entre les variables explicatives
+
+## 1. Génération des données
+
+```{r}
+set.seed(123)
+n <-  100
+
+# Résidu 
+sigma2 <- 1
+bruit <- rnorm(n, mean = 0, sd = sqrt(sigma2))
+
+# Vecteur
+X1 <- runif(n, min = -2, max = 2)
+
+# Génération de X2 corrélé à X1
+rho <- 0.8  # corrélation souhaitée (entre -1 et 1)
+X2 <- rho * scale(X1) + sqrt(1 - rho^2) * scale(rexp(n, rate = 3))
+X2 <- as.numeric(scale(X2))
+
+# Coefficient beta 
+beta <-  c(1, 1, 1)
+
+# Réponse Y
+Y <- beta[1] + beta[2]*X1 + beta[3]*X2 + bruit
+
+# RL
+reg <- lm(Y ~ X1 + X2)
+```
+
+## 2. Graphique des corrélation
+
+## 3. Boxplot des variables
+
+## 4. Graphes des résidus
+
+```{r}
+# Graphe des résidus en fonction de Y
+plot(Y, reg$residuals)
+
+# Graphe des résidus en fonction de X1
+plot(X1, reg$residuals)
+
+# Graphe des résidus en fonction de X2
+plot(X2, reg$residuals)
+```
+
+## 5. QQplot
+
+```{r}
+# QQ-plot des résidus
+qqnorm(residuals(reg), main = "QQ-plot des résidus")
+qqline(residuals(reg), col = "red", lwd = 2)
+```
+
