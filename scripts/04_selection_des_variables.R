@@ -29,7 +29,7 @@ cas_a_explorer <- cas_a_explorer %>%
         Xtr <- dat$X[dat$train, , drop = FALSE]
         Ytr <- dat$y[dat$train]
         # Application de la bonne méthode
-        # .fit_selector(selection, Xtr, Ytr)
+        .fit_selector(selection, Xtr, Ytr)
       }
     )
   )
