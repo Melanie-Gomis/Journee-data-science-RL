@@ -94,4 +94,4 @@ cas_a_explorer_simpli <- cas_a_explorer %>%
   dplyr::select(-data,-beta_final,metric_name)
 
 
-# saveRDS(cas_a_explorer_simpli,"data/cas_a_explorer_simpli")
+saveRDS(cas_a_explorer_simpli,"data/cas_a_explorer_simpli.rds")
