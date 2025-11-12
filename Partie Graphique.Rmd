@@ -159,3 +159,74 @@ qqnorm(residuals(reg), main = "QQ-plot des résidus")
 qqline(residuals(reg), col = "red", lwd = 2)
 ```
 
+# 3. Avec plus de variables explicatitves
+
+## 1. Génération des données
+
+```{r}
+generate.lm <- function(n.train, p, p0, sigma2, n.test=10*n.train) {
+  ## génération ensemble test/apprentissage
+  ## Rq : Le test peut être grand ici, car il n'impacte pas la taille de l'échantillon d'apprentissage
+  ## (Plus le test sera grand, plus les modèles seront évalués avec précision.)
+  
+  n <- n.train + n.test
+  train <- 1:n.train
+  test <- (n.train+1):n
+  
+  ## vecteur des vrais coefficients
+  beta <- numeric(p)
+  S.star <- sample(1:p, p0) ## vrai support S*
+  beta[S.star] <- runif(p0, 1, 2)*sample(c(-1,1),p0, replace=T)
+  ## bruit blanc gaussien de variance sigma2
+  noise <- rnorm(n, sd=sigma2)
+  ## prédicteurs sans structure particulière
+  X <- matrix(rnorm(n*p), n, p)
+  ## vecteur d'observation des réponses
+  y <- ## vecteur des vrais coefficients
+    beta <- numeric(p)
+  S.star <- sample(1:p, p0) ## vrai support S*
+  beta[S.star] <- runif(p0, 1, 2)*sample(c(-1,1),p0, replace=T)
+  ## bruit blanc gaussien de variance sigma2
+  noise <- rnorm(n, sd=sigma2)
+  ## prédicteurs sans structure particulière
+  X <- matrix(rnorm(n*p), n, p)
+  ## vecteur d'observation des réponses
+  y <-  X%*%beta + noise
+  
+  list(y=y, X=X, beta=beta, sigma2=sigma2, train=train, test=test)
+}
+
+# data generation
+dataset<-generate.lm(n.train=100,p=50,p0=10, sigma2=1,n.test=100)
+support<-(dataset$beta!=0)*1 # support[j]=1 si beta_j est non nul
+fit<-lm(dataset$y~dataset$X) 
+```
+
+## 2. Graphique des corrélation
+
+```{r}
+#matrice de corrélation et plot 
+X = dataset$X
+cor_mat = cor(X)
+corrplot(cor_mat, type="upper", order="hclust", tl.col="black", tl.srt=45)
+```
+## 3. Histogramme des résidus 
+
+```{r}
+hist(fit$residuals, col = "skyblue", main = "Distribution des résidus")
+```
+
+## 4. Graphes des résidus
+
+```{r}
+# Graphe des résidus en fonction de Y
+plot(dataset$y, fit$residuals)
+```
+
+## 5. QQplot
+
+```{r}
+# QQ-plot des résidus
+qqnorm(residuals(fit), main = "QQ-plot des résidus")
+qqline(residuals(fit), col = "red", lwd = 2)
+```
