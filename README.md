@@ -29,12 +29,12 @@ Journee-data-science-RL/
 
 
 ## Exécution rapide
-1) Ouvrir `report.Rmd` dans RStudio → Knit.
+1) Ouvrir `rapport.Rmd` dans RStudio → Knit.
 2) (option) Lancer les scripts dans l’ordre depuis `scripts/`.
 
 ## Auteurs
-- Mélanie: (rôle) —
-- Cédric: (rôle) —
-- Maximiliano (rôle) —
-- Enzo (rôle) —
-- Arnaud (rôle) —
+- Mélanie: (rôle) — Générer les données
+- Cédric: (rôle) — Générer les données
+- Maximiliano (rôle) — Sélection des modèles
+- Enzo (rôle) — Sélection des modèles
+- Arnaud (rôle) — Comparaison des modèles
