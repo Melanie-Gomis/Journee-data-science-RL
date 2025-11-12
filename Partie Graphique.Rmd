@@ -16,7 +16,7 @@ bruit <- rnorm(n, mean = 0, sd = sqrt(sigma2))
 
 # Vecteur
 X1 <- runif(n, min = -2, max = 2)
-X2 <- rexp(n, rate = 3)
+X2 <- runif(n, min = -2, max = 2)
 
 # Coefficient beta 
 beta <-  c(1, 1, 1)
@@ -70,8 +70,7 @@ X1 <- runif(n, min = -2, max = 2)
 
 # Génération de X2 corrélé à X1
 rho <- 0.8  # corrélation souhaitée (entre -1 et 1)
-X2 <- rho * scale(X1) + sqrt(1 - rho^2) * scale(rexp(n, rate = 3))
-X2 <- as.numeric(scale(X2))
+X2 <- rho * X1 + sqrt(1 - rho^2) * runif(n, min = -2, max = 2)
 
 # Coefficient beta 
 beta <-  c(1, 1, 1)
