@@ -40,8 +40,8 @@ head(cas_a_explorer)
 
 Attention : le code est long et couteux à faire tourner, le resultats est un tableau assez lourd. Veuillez à le faire tourner en connaissance de cause.
 
-```{r setup, include=FALSE}
+```{r setup}
 knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
-source("scripts/05_performance_des_modeles.R")
+# source("scripts/05_performance_des_modeles.R")
 ```
 

@@ -1630,20 +1630,58 @@ méthodes de sélection de variable (Protocole de simulation)</h1>
 
 <div id="TOC">
 <ul>
-<li><a href="#contexte-et-objectifs" id="toc-contexte-et-objectifs"><span class="toc-section-number">1</span>
-Contexte et objectifs</a></li>
-<li><a href="#g%C3%A9n%C3%A9rer-les-donn%C3%A9es" id="toc-générer-les-données"><span class="toc-section-number">2</span>
-Générer les données</a></li>
+<li><a href="#générer-les-données" id="toc-générer-les-données"><span class="toc-section-number">1</span> Générer les données</a></li>
+<li><a href="#générer-les-différents-résultats-des-test" id="toc-générer-les-différents-résultats-des-test"><span class="toc-section-number">2</span> Générer les différents résultats des
+test</a></li>
+<li><a href="#résultat" id="toc-résultat"><span class="toc-section-number">3</span> Résultat</a></li>
+<li><a href="#code-pour-avoir-les-résultats" id="toc-code-pour-avoir-les-résultats"><span class="toc-section-number">4</span> Code pour avoir les
+résultats</a></li>
 </ul>
 </div>
 
-<div id="contexte-et-objectifs" class="section level1" number="1">
-<h1><span class="header-section-number">1</span> Contexte et
-objectifs</h1>
-</div>
-<div id="générer-les-données" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Générer les
+<div id="générer-les-données" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Générer les
 données</h1>
+<p>Ce code est dans <code>scripts/01_generate_data.R</code>. Il comprend
+deux fonction : - <code>generate.lm</code> : qui crée X (matrice de
+variables non corrélées) et Y - <code>generate.lm.longitudinal</code> :
+qui crée X (matrice de variables corrélées longitudinalement) et Y</p>
+</div>
+<div id="générer-les-différents-résultats-des-test" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Générer les différents
+résultats des test</h1>
+<p>Ce code est dans <code>02_fonction_test.R</code>. Ce fichier contient
+plusieurs fonctions qui renvoient toute le vecteur beta* qui a pour
+valeur 0 si le test ciblé indique que la variable correspondante n’est
+pas significative.</p>
+</div>
+<div id="résultat" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Résultat</h1>
+<p>Les différents cas à modéliser sont traiter dans
+<code>03_generer_cas_a_exlorer.R</code>. Selon les différents cas, les
+différentes variables à selectionner sont issus du code
+<code>04_selection_des_variables.R</code>. Au final, les résultats sont,
+issus de <code>05_performance_des_modeles.R</code>, sont présentés sous
+forme de tableau listant tous les différents cas. Ce tableau se trouve
+dans le dossier data sous le nom
+<code>cas_a_explorer_simpli.rds</code>.</p>
+<pre class="r"><code>wd &lt;- getwd()
+cas_a_explorer &lt;- readRDS(file.path(wd, &quot;data&quot;, &quot;cas_a_explorer_simpli.rds&quot;))
+head(cas_a_explorer)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["type_donnees"],"name":[1],"type":["chr"],"align":["left"]},{"label":["p"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["n"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["sigma2"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["correlation_longitudinale"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["selection"],"name":[6],"type":["chr"],"align":["left"]},{"label":["comparaison"],"name":[7],"type":["chr"],"align":["left"]},{"label":["rapport_observation_variable"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["perf"],"name":[9],"type":["list"],"align":["right"]},{"label":["metric_name"],"name":[10],"type":["chr"],"align":["left"]},{"label":["score"],"name":[11],"type":["dbl"],"align":["right"]}],"data":[{"1":"Indépendantes","2":"10","3":"50","4":"1","5":"0.3","6":"Test de Student de signification des coefficients","7":"Erreur quadratique moyenne de β^ (RMSE) sur l’ensemble train","8":"5","9":"<dbl [5]>","10":"rmse","11":"3.7003","_rn_":"1"},{"1":"Dépendance longitudinale","2":"10","3":"50","4":"1","5":"0.3","6":"Test de Student de signification des coefficients","7":"Erreur quadratique moyenne de β^ (RMSE) sur l’ensemble train","8":"5","9":"<dbl [5]>","10":"rmse","11":"2.3021","_rn_":"2"},{"1":"Indépendantes","2":"10","3":"1000","4":"1","5":"0.3","6":"Test de Student de signification des coefficients","7":"Erreur quadratique moyenne de β^ (RMSE) sur l’ensemble train","8":"100","9":"<dbl [5]>","10":"rmse","11":"1.8259","_rn_":"3"},{"1":"Dépendance longitudinale","2":"10","3":"1000","4":"1","5":"0.3","6":"Test de Student de signification des coefficients","7":"Erreur quadratique moyenne de β^ (RMSE) sur l’ensemble train","8":"100","9":"<dbl [5]>","10":"rmse","11":"3.0566","_rn_":"4"},{"1":"Indépendantes","2":"10","3":"50","4":"200","5":"0.3","6":"Test de Student de signification des coefficients","7":"Erreur quadratique moyenne de β^ (RMSE) sur l’ensemble train","8":"5","9":"<dbl [5]>","10":"rmse","11":"175.7507","_rn_":"5"},{"1":"Dépendance longitudinale","2":"10","3":"50","4":"200","5":"0.3","6":"Test de Student de signification des coefficients","7":"Erreur quadratique moyenne de β^ (RMSE) sur l’ensemble train","8":"5","9":"<dbl [5]>","10":"rmse","11":"9.7454","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="code-pour-avoir-les-résultats" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Code pour avoir les
+résultats</h1>
+<p>Attention : le code est long et couteux à faire tourner, le resultats
+est un tableau assez lourd. Veuillez à le faire tourner en connaissance
+de cause.</p>
+<pre class="r"><code>knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+# source(&quot;scripts/05_performance_des_modeles.R&quot;)</code></pre>
 </div>
 
 
