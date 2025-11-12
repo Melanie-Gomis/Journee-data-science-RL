@@ -1,7 +1,8 @@
+cat("\nFonctions générer cas à explorer")
 cas_a_explorer <- expand.grid(
   type_donnees = c("Indépendantes","Dépendance longitudinale"),
   p = 10,
-  n = c(1, 500),                        # ici: interprété comme n.train
+  n = c(50, 1000),                        # ici: interprété comme n.train
   sigma2 = c(1, 200),
   correlation_longitudinale = c(0.3, 0.8),
   selection = c(
@@ -53,4 +54,3 @@ cas_a_explorer <- cas_a_explorer %>%
     dataset_a_explorer,
     by=c("type_donnees", "p", "n", "sigma2", "correlation_longitudinale", "rapport_observation_variable")
   )
-  
