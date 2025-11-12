@@ -1,6 +1,7 @@
 # --- Chargement de la bibliothèque ---
 library(MASS)
 library(leaps)
+cat("\nFonction selection de modèles")
 
 stepwise <- function(X, Y) {
   
