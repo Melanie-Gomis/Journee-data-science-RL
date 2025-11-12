@@ -2,7 +2,7 @@ library(mvtnorm)
 
 set.seed(123)  # reproductibilité
 
-generate.lm <- function(n.train, p, p0, sigma2,rapport_observation_variable=10 ,n.test=rapport_taille*n.train) {
+generate.lm <- function(n.train, p, p0, sigma2,rapport_observation_variable=10 ,n.test=rapport_observation_variable*n.train) {
   ## génération ensemble test/apprentissage
   ## Rq : Le test peut être grand ici, car il n'impacte pas la taille de l'échantillon d'apprentissage
   ## (Plus le test sera grand, plus les modèles seront évalués avec précision.)
