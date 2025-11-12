@@ -2,7 +2,6 @@
 
 
 ## Objectifs
-- Problématique :
 
 Un problème essentiel de la régression linéaire multiple est le choix des variables explicatives à conserver.
 Sélectionner un sous-ensemble de variables permet notamment de réaliser un compromis entre biais et variance.
