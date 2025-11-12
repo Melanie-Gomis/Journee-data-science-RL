@@ -1,0 +1,22 @@
+---
+title: "Demi-journée Data Science : Evaluation des méthodes de sélection de variable (Protocole de simulation)
+"
+author: "Équipe (5 étudiants)"
+date: "`r format(Sys.Date())`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+source("scripts/00_setup.R")
+```
+
+# Contexte et objectifs
+
+
+# Générer les données

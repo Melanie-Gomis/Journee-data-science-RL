@@ -1,0 +1,313 @@
+---
+title: "Demi-journée Data Science :
+Evaluation des méthodes de sélection de variable
+  (Protocole de simulation)."
+author: ''
+date: "M1 MIASHS 2025"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Un problème essentiel de la régression linéaire multiple est le choix des variables explicatives à conserver.
+
+- Sélectionner un sous-ensemble de variables permet notamment de réaliser un compromis entre biais et variance.  
+
+- Cela représente également une solution intéressante en cas de multi-colinéarité. 
+
+Le choix de modèle dépend des objectifs de la régression (description des données,  estimation des paramètres,  prévision de nouvelles valeurs) et de la connaissance des données.
+
+
+
+## 1. Protocole de simulation
+La simulation de données permet  d'étudier les propriétés des méthodes dans un cadre parfaitement contrôlé, et d'identifier leurs limites.  Afin de préciser les propriétés d'intérêt,  il est nécessaire de ce donner un cadre d'étude.  
+
+Nous allons mettre au point un protocole de simularion permettant d'**étudier la performance de 3 méthodes de sélection de variables** dans le modèle linéaire : 
+
+- **Test de Student** de signification des coefficients
+
+- **Recherche exhaustive** (Best subset avec l'algorithme Leaps and bound)
+
+- **Algorithme de sélection pas à pas** (stepwise)
+
+
+### 1.1 Cadre d’étude : sélection de variables dans le modèle linéaire
+
+Pour une méthode de sélection de variables, les propriétés d'intérêt sont
+
+- la capacité à retrouver les variables pertinentes,
+
+- la capacité à prédire une nouvelle observation,
+
+- la précision de l'estimation.
+
+La notion de cadre contrôlé se réfère aux hypothèses qui sont faites lors de la
+définition du modèle statistique. 
+
+**Un intérêt important des simulations numériques est de se placer dans le ``bon cas" (i.e. celui prévu par la théorie) afin d'étudier les propriétés de la méthode dans ce cadre : on s'assure que les performances sont conformes à celles attendues. On peut ensuite se permettre de s'éloigner du cadre bien contrôlé par la théorie afin d'étudier la robustesse des méthodes évaluées en présence d'écarts aux hypothèses.**
+
+On s'attache ici au modèle linéaire gaussien homoscédastique :
+
+$$Y = X \beta^{\star} + \varepsilon \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (1)$$
+
+
+avec $Y = (y_1, . . . , y_n)$ un vecteur de $\mathbb{R}^n$, $X$ une matrice de $\mathcal{M}_{n,p}(\mathbb{R})$, $\beta^{\star}=(\beta_1, \ldots , \beta_p)$ un vecteur de $\mathbb{R}^p$ dont $p_0$ éléments sont non-nuls et $\varepsilon \sim \mathcal{N}(0, \Sigma)$ un vecteur gaussien de taille $n$. 
+
+On note $S^{\star} = \{j \ \vert \ \beta_j^{\star} \not= 0\}$ l'ensemble de ces éléments, aussi appelé le **support**. 
+
+On suppose que les prédicteurs $X$ sont gaussiens multivariés de matrice de variance-covariance $\Sigma_X$.
+
+
+### 1.2 Contrôle de la difficulté
+
+Lors de l'analyse d'une procédure statistique, il est important de pouvoir contr^oler
+précisément la difficulté du problème pour déterminer le champs d'applicabilité de
+cette méthode. **Ceci permet en particulier de mesurer sa robustesse aux écarts aux hypothèses requit par l'analyse théorique.**
+
+Dans le cadre de la sélection de variables pour le modèle linéaire, divers
+phénomènes sont associés à la difficulté du problème. 
+
+On étudiera en particulier :
+
+- le niveau de bruit (variance de $\varepsilon$)
+
+- la structure de dépendance entre les prédicteurs, i.e., la covariance  du
+vecteur $X = (X_1, . . . ,X_p)$.
+
+- le nombre total de prédicteurs considérés ($p$), le nombre d'observations ($n$) et le ratio $p$/$n$.
+
+On propose dans la suite d'intégrer ces divers paramètres à une fonction que l'on nommera `generate_lm()` permettant de générer des données issues du modèle linéaire (1).
+
+## 2. Mise en oeuvre
+
+### 2.1 Modèle linéaire (cas simple)
+
+Dans un premier temps, les prédicteurs sont tirés selon des distributions gaussiennes univariées indépendantes et de variance unitaire ($\Sigma_X = I_p$).
+
+Ecrire une fonction `generate_lm(n,p,p0,sigma2)` qui renvoie une liste contenant un vecteur
+y, une matrice x, un vecteur beta (dont p0 éléments non nuls, de magnitude choisie selon une loi uniforme entre 1 et 2 et de signe positif ou négatif). 
+
+
+```{r, eval = FALSE}
+generate.lm <- function(n, p, p0, sigma2) {
+  ...
+
+  list(y=y, X=X, beta=beta, sigmaMatrix=sigmaMatrix)
+}
+```
+
+
+
+
+### 2.2 Structure de dépendance des prédicteurs
+Les prédicteurs ont pour l'instant été considérés comme indépendants. On propose
+de modéliser une forme de dépendance entre prédicteurs à l'aide d'une loi gaussienne
+multivariée telle que $X \sim \mathcal{N}(0,\Sigma_X)$. Outre le cas indépendant ($\Sigma_X = I_p$), on considèrera **AU CHOIX** l'un des 2  scénarios suivant :
+
+- une dépendance de type longitudinale : $\Sigma_{ij} = \rho^{|i−j|}$.
+
+- une dépendance par bloc : soit une partition en $K$ groupes, alors
+
+$$\Sigma_{ij} =\left \{
+\begin{eqnarray}
+1 && \text{ si } i = j,\\
+\rho && \text{ si i et j sont dans le même groupe,}\\
+0 && \text{ sinon.}\\
+\end{eqnarray}
+\right . $$
+
+On remarquera que dans le second cas, la sparsité est définie en terme de nombre K0 de blocs avec rho non nul. 
+
+Ecrire une fonction `generate.lm.long(n, p, p0, sigma2, rho)` OU `generate.lm.bloc(n, p, K0, sigma2, rho, K)` adaptée au scénario choisi. 
+
+
+
+
+```{r, eval = FALSE}
+generate.lm.bloc <- function(p, p0, sigmaMatrix) {
+  ...
+
+  list(y=y, X=X, beta=beta, sigmaMatrix=sigmaMatrix)
+}
+```
+
+N.B. : 
+Pour la génération d'un vecteur gaussien multivarié, on utilisera le package `mvtnorm`.
+
+
+### 2.3 Ensemble test, ensemble d’apprentissage
+Afin d'évaluer les performances des estimateurs, il est indispensable de générer
+des données de test. 
+
+Amender les fonctions précédentes de sorte à prendre en
+argument `n.test` et renvoyer en plus des variables précédentes des ensembles
+`train` et `test`. On pourra affecter une valeur par défaut
+à `n.test` dépendant de `n.train`, par exemple `10*n.train` (puisqu'on n'est pas limité ici dans un contexte de simulation, une grande taille d'échantillon test permettra une évaluation plus précise).
+
+**On dispose alors d'une fonction  renvoyant une liste contenant les variables (y,x,beta,Sigma,sigma,train,test) qui serviront
+à la génération de données pour les simulations.**
+
+```{r, eval = FALSE}
+generate.lm <- function(n.train, p, p0, sigma2, n.test=10*n.train) {
+  ...
+
+  list(y=y, X=X, beta=beta, sigmaMatrix=sigmaMatrix, train=train, test=test)
+}
+```
+
+
+### 2.4 Implémentation des méthodes de sélection de modèle
+
+On se propose d'étudier les procédures suivantes : 
+
+- la recherche exhaustive best subsets avec critère Cp, AIC et BIC
+
+- la régression ``stepwise" avec critère AIC et BIC,
+
+On comparera ces procédures dites aux méthodes de référence suivantes :
+
+- les moindres carrés ordinaires (et test de nullité des coefficients),
+
+- les moindres carrés oracle (i.e. dans le cas où l'on suppose connaître le vrai support $S^{\star}$).
+
+
+Ecrire une fonction par estimateur `getBestSubset()`, `getStepwiseAIC()`, `getStepwiseBIC()` qui récupère la valeur de $\hat{\beta}$. 
+
+
+
+```{r, eval = FALSE}
+getStepBIC <- function(X, y) {
+  
+  ...
+  
+  beta
+}
+```
+
+N.B. : Les méthodes seront implémentées à partir de la fonction  `regsubset()` du package `leaps` et `step()` du package `MASS`.
+
+
+## 3 Comparaison des méthodes
+
+### 3.1 Évaluation des performances
+On s'intéresse aux performances des méthodes à la fois en terme de capacité
+prédictive et en terme de sélection de variables (pertinence du support estimé $\hat{S}$ = liste des prédicteurs associés à un coefficient non nul de $\hat{\beta}$.)
+
+On considèrera pour cela les grandeurs suivantes :
+
+- l'erreur quadratique moyenne de $\hat{\beta}$ (RMSE) sur l'ensemble train,
+
+- l'erreur moyenne de prédiction calculée sur l'ensemble test, 
+
+- la précision du support estimé $\hat{S}$ (=(TN + TP)/p)
+
+- la sensibilité de $\hat{S}$ (= TP/(FN + TP))
+
+- la spécificité de $\hat{S}$ (=TN/(TN + FP))
+
+où TP, FP, TN, FN correspondent respectivement à True Positive, False Positive, True
+Negative et False Negative.
+
+
+Ecrire une fonction `getPerformance()` qui calcule tous ces indices pour un estimateur
+$\hat{\beta}$ donné.
+
+```{r, eval = FALSE}
+perf <- function(X_test, y_test, beta, beta.star) {
+  
+  nzero <- which(beta != 0)
+  zero  <- which(beta == 0)
+  
+  true.nzero <- which(beta.star != 0)
+  true.zero  <- which(beta.star == 0)
+  
+  TP <- sum(nzero %in% true.nzero)
+  TN <- sum(zero %in%  true.zero)
+  FP <- sum(nzero %in% true.zero)
+  FN <- sum(zero %in%  true.nzero)
+  
+  recall    <- TP/(TP + FN) ## also recall and sensitivity
+  specificity   <- TN/(FP + TN) ## specificity
+  precision <- TP/(TP + FP) ## also PPR
+  recall[TP + FN == 0] <- NA
+  specificity[TN + FP == 0] <- NA
+  precision[TP + FP == 0] <- NA
+
+  rmse <- sqrt(mean((beta - beta.star)^2, na.rm = TRUE))
+  rerr <- sqrt(mean((y_test - X_test %*% beta)^2))
+  res <-  round(c(precision,recall,specificity, rmse, rerr),4)
+  res[is.nan(res)] <- 0
+  names(res) <- c("precision","recall","specificity","rmse", "prediction") 
+  res
+}
+
+```
+
+### 3.2 Planning de simulations
+Créer un script de simulation pour chaque scénario de matrice de covariance des
+prédicteurs $\Sigma_X$, en commençant par exemple par le cas où les prédicteurs sont générés de façon indépendante.
+
+Chaque simulation doit renvoyer un data.frame de la forme suivante, afin de
+faciliter le tracé des résultats à l'aide du package `ggplot2`.
+
+```{r}
+library(tibble)
+
+res <- tribble(
+  ~method,       ~mse, ~err,  ~acc, ~sen, ~spe, ~n.p, ~sigma2, ~simu,
+  "bestsubset",   0.3, -0.25, 0.92, 0.9,  0.75, 0.5,   0.75,     1,
+  "stepwiseAIC",  1.65, -0.17, 0.92, 0.9,  0.75, 0.5,   0.75,     1,
+  "stepwiseBIC",  0.51,  0.07, 0.92, 0.9,  0.75, 0.5,   0.75,     1
+)
+
+res
+```
+
+Ecrire une fonction `getOneSimu(i)` permettant d'effectuer la simulation numéro i
+pour toutes les méthodes et pour toutes les valeurs des paramètres de simulation
+que vous aurez choisis. 
+
+```{r, eval = FALSE}
+library(tidyverse) # pour l'utilisation du pipe %>%
+getOneSimu <- function(i) {
+  data <- generate.lm(n.train=100, p=50, p0=10, sigma2=1, n.test=10*n.train100)
+  
+  beta_AIC <- getStepAIC(data$X[data$train, ], data$y[data$train])
+  beta_BIC <- getStepBIC(data$X[data$train, ], data$y[data$train])
+  
+  res <-
+    data.frame(
+      rbind(
+        perf(data$X[data$test, ], data$y[data$test], beta_AIC, data$beta),
+        perf(data$X[data$test, ], data$y[data$test], beta_BIC, data$beta)
+      )
+    ) %>% 
+    add_column(method = c("stepAIC", "stepBIC")) %>% 
+    add_column(simu_label = i)
+  res
+}
+```
+
+N.B. Cette fonction sera ensuite facilement parallélisable, par exemple avec le package `parallel` ou `pbmcapply` :
+
+
+```{r, eval=FALSE}
+library(tidyverse) # pour la fonction Reduce()
+library(pbmcapply)
+n_simu <- 10
+res <- Reduce("rbind", pbmclapply(1:n_simu, getOneSimu, mc.cores = 2))
+
+```
+
+
+### 3.3 Interprétations des résultats
+-  Représentez les boxplots des indicateurs de performance en fonction du ratio $p$/$n$
+et de la valeur du R2. On utilisera le package `ggplot2`.
+- Quels sont les effets du ratio $p$/$n$ et de la corrélation des prédicteurs sur les performances des estimateurs (en estimation, en sélection) ?
+- Explorer les differents scénarios. Y a t-il des méthodes plus adaptées à
+certains scénarios ? Si oui, pourquoi ?
