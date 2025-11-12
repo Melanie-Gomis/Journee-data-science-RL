@@ -95,3 +95,4 @@ cas_a_explorer_simpli <- cas_a_explorer %>%
 
 
 saveRDS(cas_a_explorer_simpli,"data/cas_a_explorer_simpli.rds")
+
