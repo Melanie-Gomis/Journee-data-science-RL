@@ -25,7 +25,16 @@ Ce code est dans `02_fonction_test.R`. Ce fichier contient plusieurs fonctions q
 
 Les différents cas à modéliser sont traiter dans `03_generer_cas_a_exlorer.R`. 
 Selon les différents cas, les différentes variables à selectionner sont issus du code `04_selection_des_variables.R`.
-Au final, les résultats sont, issus de `05_performance_des_modeles.R, sont présentés sous forme de tableau listant tous les différents cas.
+Au final, les résultats sont, issus de `05_performance_des_modeles.R`, sont présentés sous forme de tableau listant tous les différents cas. Ce tableau se trouve dans le dossier data sous le nom `cas_a_explorer_simpli.rds`.
+
+
+```{r}
+wd <- getwd()
+cas_a_explorer <- readRDS(file.path(wd, "data", "cas_a_explorer_simpli.rds"))
+head(cas_a_explorer)
+```
+
+
 
 # Code pour avoir les résultats
 
