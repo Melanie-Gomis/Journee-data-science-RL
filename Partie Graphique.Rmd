@@ -2,6 +2,17 @@
 title: "Partie visualisation"
 output: html_notebook
 ---
+
+```{r}
+#=================
+#   PACKAGES
+#=================
+
+library(corrplot)
+
+
+```
+
 # 1. Sans corrélation entre les variables explicatives
 
 ## 1. Génération des données
@@ -29,8 +40,32 @@ reg <- lm(Y ~ X1 + X2)
 ```
 
 ## 2. Graphique des corrélation
+```{r}
+#visualisation de la corrélation entre les variables 
+par(mfrow = c(1, 3))
+plot(Y, X1, main = "x1 ~ Y")
+plot(Y, X2, main = "x2 ~ Y")
+plot(X1, X2, main = "x1 ~ x2")
+```
+On voit bien que la corrélation n'existe pas entre les 2 variables explicatives 
+```{r}
+#Matrice de corrélation et plot 
+X = cbind(X1,X2)
+cor_mat = cor(X)
+corrplot(cor_mat, type="upper", order="hclust", tl.col="black", tl.srt=45)
 
-## 3. Boxplot des variables
+```
+
+
+## 3. Histogramme des résidus 
+
+```{r}
+
+
+hist(reg$residuals, col = "skyblue", main = "Distribution des résidus")
+
+```
+
 
 ## 4. Graphes des résidus
 
@@ -70,7 +105,8 @@ X1 <- runif(n, min = -2, max = 2)
 
 # Génération de X2 corrélé à X1
 rho <- 0.8  # corrélation souhaitée (entre -1 et 1)
-X2 <- rho * X1 + sqrt(1 - rho^2) * runif(n, min = -2, max = 2)
+X2 <- rho * scale(X1) + sqrt(1 - rho^2) * scale(rexp(n, rate = 3))
+X2 <- as.numeric(scale(X2))
 
 # Coefficient beta 
 beta <-  c(1, 1, 1)
@@ -83,8 +119,30 @@ reg <- lm(Y ~ X1 + X2)
 ```
 
 ## 2. Graphique des corrélation
+```{r}
+#visualisation de la corrélation entre les variables 
+par(mfrow = c(1, 3))
+plot(Y, X1, main = "x1 ~ Y")
+plot(Y, X2, main = "x2 ~ Y")
+plot(X1, X2, main = "x1 ~ x2")
 
-## 3. Boxplot des variables
+
+```
+```{r}
+#matrice de corrélation et plot 
+X = cbind(X1,X2)
+cor_mat = cor(X)
+corrplot(cor_mat, type="upper", order="hclust", tl.col="black", tl.srt=45)
+```
+
+## 3. Histogramme des résidus 
+```{r}
+
+hist(reg$residuals, col = "skyblue", main = "Distribution des résidus")
+
+
+
+```
 
 ## 4. Graphes des résidus
 
