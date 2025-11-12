@@ -199,7 +199,7 @@ graph_cas_a_explorer_taille <- cas_a_explorer_taille_simpli %>%
     legend.position = "bottom"
     )+
   labs(
-    title = "Comparaison des methodes de selection de variables en fonction de l'évolution de la taille"
+    title = "Comparaison des methodes de selection de variables\nen fonction de l'évolution de la taille"
   )
 
 
@@ -295,7 +295,7 @@ graph_cas_a_explorer_dependance_longitudinale <- cas_a_explorer_dependance_longi
     legend.position = "bottom"
   )+
   labs(
-    title = "Comparaison des methodes de selection de variables en fonction de l'évolution de la correlation longitudinale"
+    title = "Comparaison des methodes de selection de variables\nen fonction de l'évolution de la correlation longitudinale"
   )
 
 
@@ -390,7 +390,7 @@ graph_cas_a_explorer_sigma <- cas_a_explorer_sigma_simpli %>%
     legend.position = "bottom"
   )+
   labs(
-    title = "Comparaison des methodes de selection de variables en fonction de l'évolution de sigma2"
+    title = "Comparaison des methodes de selection de variables\nen fonction de l'évolution de sigma2"
   )
 
 
